@@ -34,7 +34,8 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:5173",
-                "http://localhost:5174"
+                "http://localhost:5174",
+                "https://kandious-frontend.vercel.app"
         ));
         configuration.setAllowedMethods(
                 Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
