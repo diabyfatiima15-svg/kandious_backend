@@ -60,6 +60,9 @@ public class SecurityConfig {
                         // ===== AUTH PUBLIC =====
                         .requestMatchers("/api/auth/**").permitAll()
 
+                        .requestMatchers("/api/client-auth/**").permitAll()
+
+
                         // ===== DASHBOARD =====
                         .requestMatchers("/api/dashboard/notifications")
                         .hasAnyAuthority("ROLE_ADMIN","ROLE_VENDEUR","ROLE_CAISSIER")
