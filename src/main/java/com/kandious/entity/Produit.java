@@ -39,6 +39,7 @@ public class Produit {
     @Column(name = "code_barres", unique = true)
     private String codeBarres;
 
+    @Column(columnDefinition = "LONGTEXT")
     private String photo;
 
     @Enumerated(EnumType.STRING)
