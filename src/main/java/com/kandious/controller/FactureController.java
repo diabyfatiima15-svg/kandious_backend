@@ -42,9 +42,13 @@ public class FactureController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(
-            @PathVariable Long id) {
-        factureService.delete(id);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        try {
+            factureService.delete(id);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", e.getMessage()));
+        }
     }
 }
