@@ -61,11 +61,12 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
 
                         .requestMatchers("/api/client-auth/inscription", "/api/client-auth/verifier", "/api/client-auth/login").permitAll()
+                        .requestMatchers("/api/admin/rapports/**").hasAuthority("ROLE_ADMIN")
+
                         .requestMatchers("/api/client-auth/me").authenticated()
 
 
                         // ===== DASHBOARD =====
-                        .requestMatchers("/api/admin/rapports/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/dashboard/notifications")
                         .hasAnyAuthority("ROLE_ADMIN","ROLE_VENDEUR","ROLE_CAISSIER")
                         .requestMatchers("/api/dashboard/admin")
