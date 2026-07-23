@@ -1,6 +1,8 @@
 package com.kandious.security;
 
+import com.kandious.entity.Client;
 import com.kandious.entity.Utilisateur;
+import com.kandious.repository.ClientRepository;
 import com.kandious.repository.UtilisateurRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -21,6 +23,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
     private final UtilisateurRepository utilisateurRepository;
+    private final ClientRepository clientRepository;
 
     @Override
     protected void doFilterInternal(
@@ -29,38 +32,40 @@ public class JwtFilter extends OncePerRequestFilter {
             FilterChain filterChain)
             throws ServletException, IOException {
 
-        // Récupérer le header Authorization
         String authHeader = request.getHeader("Authorization");
 
-        // Vérifier que le header existe et commence par "Bearer "
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // Extraire le token (enlever "Bearer ")
         String token = authHeader.substring(7);
 
-        // Valider le token
         if (!jwtUtils.validateToken(token)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // Extraire l'email et le rôle
         String email = jwtUtils.getEmailFromToken(token);
         String role = jwtUtils.getRoleFromToken(token);
 
-        // Vérifier que l'utilisateur existe en base
-        Utilisateur utilisateur = utilisateurRepository
-                .findByEmail(email).orElse(null);
+        boolean estValide = false;
 
-        if (utilisateur == null || !utilisateur.getActif()) {
+        if ("CLIENT".equals(role)) {
+            // Vérifier dans la table clients
+            Client client = clientRepository.findByEmail(email).orElse(null);
+            estValide = (client != null && client.getCompteEnLigne());
+        } else {
+            // Vérifier dans la table utilisateurs (Admin/Vendeur/Caissier)
+            Utilisateur utilisateur = utilisateurRepository.findByEmail(email).orElse(null);
+            estValide = (utilisateur != null && utilisateur.getActif());
+        }
+
+        if (!estValide) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // Créer l'authentification Spring Security
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(
                         email,
@@ -68,7 +73,6 @@ public class JwtFilter extends OncePerRequestFilter {
                         List.of(new SimpleGrantedAuthority("ROLE_" + role))
                 );
 
-        // Mettre l'authentification dans le contexte
         SecurityContextHolder.getContext()
                 .setAuthentication(authentication);
 
