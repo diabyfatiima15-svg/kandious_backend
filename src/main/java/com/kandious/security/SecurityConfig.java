@@ -59,12 +59,8 @@ public class SecurityConfig {
 
                         // ===== AUTH PUBLIC =====
                         .requestMatchers("/api/auth/**").permitAll()
-
                         .requestMatchers("/api/client-auth/inscription", "/api/client-auth/verifier", "/api/client-auth/login").permitAll()
-                        .requestMatchers("/api/admin/rapports/**").hasAuthority("ROLE_ADMIN")
-
                         .requestMatchers("/api/client-auth/me").authenticated()
-
 
                         // ===== DASHBOARD =====
                         .requestMatchers("/api/dashboard/notifications")
@@ -76,17 +72,23 @@ public class SecurityConfig {
                         .requestMatchers("/api/dashboard/caissier")
                         .hasAnyAuthority("ROLE_ADMIN","ROLE_CAISSIER")
 
+                        // ===== RAPPORTS (ADMIN uniquement) =====
+                        .requestMatchers("/api/admin/rapports/**").hasAuthority("ROLE_ADMIN")
+
+                        // ===== COMMANDES =====
+                        .requestMatchers("/api/client/commandes/**").hasAuthority("ROLE_CLIENT")
+                        .requestMatchers("/api/admin/commandes/**").hasAnyAuthority("ROLE_ADMIN","ROLE_VENDEUR")
+
+                        // ===== HISTORIQUE CLIENT =====
+                        .requestMatchers("/api/client/**").hasAuthority("ROLE_CLIENT")
+
                         // ===== UTILISATEURS =====
-                        // Admin seulement
                         .requestMatchers("/api/utilisateurs/**")
                         .hasAuthority("ROLE_ADMIN")
 
                         // ===== PRODUITS =====
-                        // Lecture : Admin + Vendeur + Caissier
-                        // (Caissier doit voir les produits pour créer une vente)
                         .requestMatchers(HttpMethod.GET, "/api/produits/**")
                         .hasAnyAuthority("ROLE_ADMIN","ROLE_VENDEUR","ROLE_CAISSIER")
-                        // Écriture : Admin seulement
                         .requestMatchers(HttpMethod.POST, "/api/produits/**")
                         .hasAuthority("ROLE_ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/produits/**")
@@ -95,10 +97,8 @@ public class SecurityConfig {
                         .hasAuthority("ROLE_ADMIN")
 
                         // ===== CATEGORIES =====
-                        // Lecture : Admin + Vendeur + Caissier
                         .requestMatchers(HttpMethod.GET, "/api/categories/**")
                         .hasAnyAuthority("ROLE_ADMIN","ROLE_VENDEUR","ROLE_CAISSIER")
-                        // Écriture : Admin seulement
                         .requestMatchers(HttpMethod.POST, "/api/categories/**")
                         .hasAuthority("ROLE_ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/categories/**")
@@ -107,10 +107,8 @@ public class SecurityConfig {
                         .hasAuthority("ROLE_ADMIN")
 
                         // ===== FOURNISSEURS =====
-                        // Lecture : Admin + Vendeur
                         .requestMatchers(HttpMethod.GET, "/api/fournisseurs/**")
                         .hasAnyAuthority("ROLE_ADMIN","ROLE_VENDEUR")
-                        // Écriture : Admin seulement
                         .requestMatchers(HttpMethod.POST, "/api/fournisseurs/**")
                         .hasAuthority("ROLE_ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/fournisseurs/**")
@@ -119,64 +117,46 @@ public class SecurityConfig {
                         .hasAuthority("ROLE_ADMIN")
 
                         // ===== ACHATS =====
-                        // Lecture : Admin + Vendeur
                         .requestMatchers(HttpMethod.GET, "/api/achats/**")
                         .hasAnyAuthority("ROLE_ADMIN","ROLE_VENDEUR")
-                        // Création : Admin + Vendeur
                         .requestMatchers(HttpMethod.POST, "/api/achats/**")
                         .hasAnyAuthority("ROLE_ADMIN","ROLE_VENDEUR")
-                        // Réceptionner + Annuler : Admin + Vendeur
                         .requestMatchers(HttpMethod.PUT, "/api/achats/**")
                         .hasAnyAuthority("ROLE_ADMIN","ROLE_VENDEUR")
-                        // Supprimer : Admin seulement
                         .requestMatchers(HttpMethod.DELETE, "/api/achats/**")
                         .hasAuthority("ROLE_ADMIN")
 
                         // ===== VENTES =====
-                        // Lecture : Admin + Caissier
                         .requestMatchers(HttpMethod.GET, "/api/ventes/**")
                         .hasAnyAuthority("ROLE_ADMIN","ROLE_CAISSIER")
-                        // Création : Admin + Caissier
                         .requestMatchers(HttpMethod.POST, "/api/ventes/**")
                         .hasAnyAuthority("ROLE_ADMIN","ROLE_CAISSIER")
-                        // Annuler : Admin + Caissier
                         .requestMatchers(HttpMethod.PUT, "/api/ventes/**")
                         .hasAnyAuthority("ROLE_ADMIN","ROLE_CAISSIER")
-                        // Supprimer : Admin seulement
                         .requestMatchers(HttpMethod.DELETE, "/api/ventes/**")
                         .hasAuthority("ROLE_ADMIN")
 
                         // ===== FACTURES =====
-                        // Lecture : Admin + Caissier
                         .requestMatchers(HttpMethod.GET, "/api/factures/**")
                         .hasAnyAuthority("ROLE_ADMIN","ROLE_CAISSIER")
-                        // Supprimer : Admin seulement
+                        .requestMatchers(HttpMethod.POST, "/api/factures/**")
+                        .hasAuthority("ROLE_ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/factures/**")
                         .hasAuthority("ROLE_ADMIN")
 
-                        // ===== CLIENTS =====
-                        .requestMatchers("/api/client/commandes/**").hasAuthority("ROLE_CLIENT")
-                        .requestMatchers("/api/admin/commandes/**").hasAnyAuthority("ROLE_ADMIN","ROLE_VENDEUR")
-                        .requestMatchers("/api/client/**").hasAuthority("ROLE_CLIENT")
-                        // Lecture : tous
+                        // ===== CLIENTS (gestion interne) =====
                         .requestMatchers(HttpMethod.GET, "/api/clients/**")
                         .hasAnyAuthority("ROLE_ADMIN","ROLE_VENDEUR","ROLE_CAISSIER")
-                        // Création : Admin + Vendeur + Caissier
                         .requestMatchers(HttpMethod.POST, "/api/clients/**")
                         .hasAnyAuthority("ROLE_ADMIN","ROLE_VENDEUR","ROLE_CAISSIER")
-                        // Modification : Admin + Vendeur seulement
                         .requestMatchers(HttpMethod.PUT, "/api/clients/**")
                         .hasAnyAuthority("ROLE_ADMIN","ROLE_VENDEUR")
-                        // Suppression : Admin seulement
                         .requestMatchers(HttpMethod.DELETE, "/api/clients/**")
                         .hasAuthority("ROLE_ADMIN")
 
                         // ===== LOGS =====
-                        // Écriture manuelle : tous les rôles
-                        // (DOIT être avant la règle générale /api/logs/**)
                         .requestMatchers(HttpMethod.POST, "/api/logs/manuel")
                         .hasAnyAuthority("ROLE_ADMIN","ROLE_VENDEUR","ROLE_CAISSIER")
-                        // Lecture + suppression : Admin seulement
                         .requestMatchers("/api/logs/**")
                         .hasAuthority("ROLE_ADMIN")
 
