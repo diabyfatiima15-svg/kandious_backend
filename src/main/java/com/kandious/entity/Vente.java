@@ -44,8 +44,7 @@ public class Vente {
     @OneToMany(mappedBy = "vente", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<VenteDetail> venteDetails = new ArrayList<>();
 
-    @OneToOne(mappedBy = "vente", cascade = CascadeType.ALL)
-
-   @JsonIgnore
-    private Facture facture;
+    @OneToMany(mappedBy = "vente", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Facture> factures = new ArrayList<>();
 }
