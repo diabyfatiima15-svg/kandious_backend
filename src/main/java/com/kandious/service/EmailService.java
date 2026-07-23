@@ -12,32 +12,40 @@ import java.util.Map;
 @Service
 public class EmailService {
 
-    @Value("${resend.api.key}")
-    private String resendApiKey;
+    @Value("${brevo.api.key}")
+    private String brevoApiKey;
 
     @Value("${app.frontend.url}")
     private String frontendUrl;
 
-    private static final String RESEND_URL = "https://api.resend.com/emails";
-    private static final String EMAIL_EXPEDITEUR = "onboarding@resend.dev";
+    private static final String BREVO_URL = "https://api.brevo.com/v3/smtp/email";
+    private static final String EMAIL_EXPEDITEUR = "diabyfatiima15@gmail.com";
+    private static final String NOM_EXPEDITEUR = "KANDIOU'S Fashion";
 
     private void envoyerEmail(String destinataire, String sujet, String texte) {
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(resendApiKey);
+        headers.set("api-key", brevoApiKey);
+
+        Map<String, Object> sender = new HashMap<>();
+        sender.put("name", NOM_EXPEDITEUR);
+        sender.put("email", EMAIL_EXPEDITEUR);
+
+        Map<String, Object> to = new HashMap<>();
+        to.put("email", destinataire);
 
         Map<String, Object> body = new HashMap<>();
-        body.put("from", EMAIL_EXPEDITEUR);
-        body.put("to", new String[]{destinataire});
+        body.put("sender", sender);
+        body.put("to", new Object[]{to});
         body.put("subject", sujet);
-        body.put("text", texte);
+        body.put("textContent", texte);
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
 
         try {
-            restTemplate.postForObject(RESEND_URL, request, String.class);
+            restTemplate.postForObject(BREVO_URL, request, String.class);
         } catch (Exception e) {
             System.err.println("Erreur envoi email : " + e.getMessage());
         }
