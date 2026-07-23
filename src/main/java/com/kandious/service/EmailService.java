@@ -73,4 +73,16 @@ public class EmailService {
 
         envoyerEmail(emailAdmin, "Nouveau client inscrit - KANDIOU'S Fashion", texte);
     }
+
+    public void notifierAdminNouvelleCommande(String emailAdmin, String numeroCommande, String nomClient) {
+        String texte =
+                "Bonjour,\n\n" +
+                        "Une nouvelle commande vient d'être passée sur la boutique en ligne :\n\n" +
+                        "Commande N° " + numeroCommande + "\n" +
+                        "Cliente : " + nomClient + "\n\n" +
+                        "Connectez-vous à l'espace d'administration pour la traiter.\n\n" +
+                        "L'équipe KANDIOU'S Fashion";
+
+        envoyerEmail(emailAdmin, "Nouvelle commande en ligne - KANDIOU'S Fashion", texte);
+    }
 }

@@ -153,6 +153,8 @@ public class SecurityConfig {
                         .hasAuthority("ROLE_ADMIN")
 
                         // ===== CLIENTS =====
+                        .requestMatchers("/api/client/commandes/**").hasAuthority("ROLE_CLIENT")
+                        .requestMatchers("/api/admin/commandes/**").hasAnyAuthority("ROLE_ADMIN","ROLE_VENDEUR")
                         .requestMatchers("/api/client/**").hasAuthority("ROLE_CLIENT")
                         // Lecture : tous
                         .requestMatchers(HttpMethod.GET, "/api/clients/**")
