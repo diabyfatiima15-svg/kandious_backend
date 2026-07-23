@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import com.kandious.entity.Facture;
 import java.util.Optional;
 
 @Service
@@ -165,11 +166,13 @@ public class VenteService {
         }
 
         // Synchroniser le statut de la facture liée
-        factureRepository.findByVenteId(id)
-                .ifPresent(facture -> {
-                    facture.setStatut("ANNULEE");
-                    factureRepository.save(facture);
-                });
+        List<Facture> facturesLiees = factureRepository.findByVenteId(id);
+        for (Facture facture : facturesLiees) {
+            if (!"ANNULEE".equals(facture.getStatut())) {
+                facture.setStatut("ANNULEE");
+                factureRepository.save(facture);
+            }
+        }
 
         vente.setStatut("ANNULEE");
         return venteRepository.save(vente);
