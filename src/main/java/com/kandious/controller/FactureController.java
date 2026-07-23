@@ -41,6 +41,17 @@ public class FactureController {
         }
     }
 
+    @PostMapping("/regenerer/{venteId}")
+    public ResponseEntity<?> regenerer(@PathVariable Long venteId) {
+        try {
+            Facture facture = factureService.regenerer(venteId);
+            return ResponseEntity.ok(facture);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", e.getMessage()));
+        }
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         try {

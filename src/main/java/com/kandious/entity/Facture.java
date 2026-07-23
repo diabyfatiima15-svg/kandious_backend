@@ -25,7 +25,7 @@ public class Facture {
 
     private String statut = "EMISE";
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "vente_id", nullable = false, unique = true)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "vente_id", nullable = false)
     private Vente vente;
 }

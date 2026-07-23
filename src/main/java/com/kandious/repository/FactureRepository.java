@@ -13,7 +13,7 @@ public interface FactureRepository
 
     Optional<Facture> findByNumero(String numero);
 
-    Optional<Facture> findByVenteId(Long venteId);
+    List<Facture> findByVenteId(Long venteId);
 
     List<Facture> findByStatut(String statut);
 

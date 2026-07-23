@@ -1,7 +1,9 @@
 package com.kandious.service;
 
 import com.kandious.entity.Facture;
+import com.kandious.entity.Vente;
 import com.kandious.repository.FactureRepository;
+import com.kandious.repository.VenteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +15,7 @@ import java.util.Optional;
 public class FactureService {
 
     private final FactureRepository factureRepository;
+    private final VenteRepository venteRepository;
 
     @Transactional
     public List<Facture> findAll() {
@@ -60,5 +63,27 @@ public class FactureService {
 
     public void delete(Long id) {
         factureRepository.deleteById(id);
+    }
+
+    public Facture regenerer(Long venteId) {
+        List<Facture> facturesExistantes = factureRepository.findByVenteId(venteId);
+
+        boolean aUneFactureActive = facturesExistantes.stream()
+                .anyMatch(f -> !"ANNULEE".equals(f.getStatut()));
+
+        if (aUneFactureActive) {
+            throw new RuntimeException("Cette vente a déjà une facture active !");
+        }
+
+        Vente vente = venteRepository.findById(venteId)
+                .orElseThrow(() -> new RuntimeException("Vente introuvable !"));
+
+        Facture nouvelleFacture = new Facture();
+        nouvelleFacture.setNumero("FACT-" + System.currentTimeMillis());
+        nouvelleFacture.setMontant(vente.getMontantTotal());
+        nouvelleFacture.setStatut("EMISE");
+        nouvelleFacture.setVente(vente);
+
+        return factureRepository.save(nouvelleFacture);
     }
 }
