@@ -57,7 +57,8 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
 
-                        // ===== AUTH PUBLIC =====
+                        // ===== PUBLIC (aucune authentification requise) =====
+                        .requestMatchers("/api/public/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/client-auth/inscription", "/api/client-auth/verifier", "/api/client-auth/login").permitAll()
                         .requestMatchers("/api/client-auth/me").authenticated()
@@ -111,7 +112,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/promotions/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/promotions/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/promotions/**").hasAuthority("ROLE_ADMIN")
-
 
                         // ===== FOURNISSEURS =====
                         .requestMatchers(HttpMethod.GET, "/api/fournisseurs/**")
