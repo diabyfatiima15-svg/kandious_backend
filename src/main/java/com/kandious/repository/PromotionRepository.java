@@ -8,14 +8,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface PromotionRepository
-        extends JpaRepository<Promotion, Long> {
-
-    Optional<Promotion> findByCodePromo(String codePromo);
-
-    List<Promotion> findByActifTrue();
+public interface PromotionRepository extends JpaRepository<Promotion, Long> {
 
     List<Promotion> findByProduitId(Long produitId);
 
-    List<Promotion> findByDateFinAfter(LocalDate date);
+    Optional<Promotion> findByProduitIdAndActifTrueAndDateDebutLessThanEqualAndDateFinGreaterThanEqual(
+            Long produitId, LocalDate aujourdhui1, LocalDate aujourdhui2
+    );
+
+    List<Promotion> findByActifTrue();
 }

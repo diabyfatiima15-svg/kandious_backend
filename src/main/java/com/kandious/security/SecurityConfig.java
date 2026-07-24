@@ -106,6 +106,13 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/categories/**")
                         .hasAuthority("ROLE_ADMIN")
 
+                        // ===== PROMOTIONS =====
+                        .requestMatchers(HttpMethod.GET, "/api/promotions/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/promotions/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/promotions/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/promotions/**").hasAuthority("ROLE_ADMIN")
+
+
                         // ===== FOURNISSEURS =====
                         .requestMatchers(HttpMethod.GET, "/api/fournisseurs/**")
                         .hasAnyAuthority("ROLE_ADMIN","ROLE_VENDEUR")
