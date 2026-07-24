@@ -1,6 +1,7 @@
 package com.kandious.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,13 +16,16 @@ public class Client {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Le nom est obligatoire")
     @Column(nullable = false)
     private String nom;
 
     private String prenom;
 
+    @Pattern(regexp = "^[0-9+\\s-]{6,20}$", message = "Numéro de téléphone invalide")
     private String telephone;
 
+    @Email(message = "Format d'email invalide")
     @Column(unique = true)
     private String email;
 
@@ -42,6 +46,7 @@ public class Client {
     @Column(columnDefinition = "TEXT")
     private String adresse;
 
+    @Min(value = 0, message = "Les points de fidélité ne peuvent pas être négatifs")
     @Column(name = "points_fidelite")
     private Integer pointsFidelite = 0;
 

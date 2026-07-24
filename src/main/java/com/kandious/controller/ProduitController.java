@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import jakarta.validation.Valid;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/produits")
@@ -76,35 +78,44 @@ public class ProduitController {
         return ResponseEntity.ok(produitService.findStockBas());
     }
 
-    // POST /api/produits
     @PostMapping
-    public ResponseEntity<Produit> save(
-            @RequestBody Produit produit,
+    public ResponseEntity<?> save(
+            @Valid @RequestBody Produit produit,
             @RequestHeader("Authorization") String authHeader) {
-        Produit saved = produitService.save(produit);
+        try {
+            Produit saved = produitService.save(produit);
 
-        Long userId = getUtilisateurId(authHeader);
-        if (userId != null) {
-            logActiviteService.logAction(userId, "CREATION_PRODUIT",
-                    "Produit créé : " + saved.getNom());
+            Long userId = getUtilisateurId(authHeader);
+            if (userId != null) {
+                logActiviteService.logAction(userId, "CREATION_PRODUIT",
+                        "Produit créé : " + saved.getNom());
+            }
+            return ResponseEntity.ok(saved);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", e.getMessage()));
         }
-        return ResponseEntity.ok(saved);
     }
 
     // PUT /api/produits/1
     @PutMapping("/{id}")
-    public ResponseEntity<Produit> update(
+    public ResponseEntity<?> update(
             @PathVariable Long id,
-            @RequestBody Produit produit,
+            @Valid @RequestBody Produit produit,
             @RequestHeader("Authorization") String authHeader) {
-        Produit updated = produitService.update(id, produit);
+        try {
+            Produit updated = produitService.update(id, produit);
 
-        Long userId = getUtilisateurId(authHeader);
-        if (userId != null) {
-            logActiviteService.logAction(userId, "MODIFICATION_PRODUIT",
-                    "Produit modifié : " + updated.getNom());
+            Long userId = getUtilisateurId(authHeader);
+            if (userId != null) {
+                logActiviteService.logAction(userId, "MODIFICATION_PRODUIT",
+                        "Produit modifié : " + updated.getNom());
+            }
+            return ResponseEntity.ok(updated);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", e.getMessage()));
         }
-        return ResponseEntity.ok(updated);
     }
 
     // PUT /api/produits/1/stock?quantite=10
